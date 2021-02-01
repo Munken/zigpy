@@ -1606,7 +1606,7 @@ class GreenPowerProxy(Cluster):
         if ieee not in application.devices:
             return
         if command_id not in GreenPowerProxy.command:
-            LOGGER.debug("Unhandled command_id : %s",command_id)
+            LOGGER.debug("Unhandled command_id : %s", command_id)
             return
         calcul_mic = self.calcul_mic(
             ieee,
@@ -1640,8 +1640,10 @@ class GreenPowerProxy(Cluster):
         value = value + tuple(payload)
         dev = application.devices[ieee]
         if counter is not None:
-            attributes = dev.endpoints[self.endpoint_id].in_clusters[self.cluster_id]._attr_cache
-            if (0x9999 in attributes and attributes[0x9999] > counter):
+            attributes = (
+                dev.endpoints[self.endpoint_id].in_clusters[self.cluster_id]._attr_cache
+            )
+            if 0x9999 in attributes and attributes[0x9999] > counter:
                 LOGGER.debug("Already get this frame counter,I ignoring it")
                 return
             attributes._update_attribute(0x9999, counter)
@@ -1683,7 +1685,8 @@ class GreenPowerProxy(Cluster):
         if (
             0x9998
             not in dev.endpoints[self.endpoint_id]
-            .in_clusters[self.cluster_id]._attr_cache
+            .in_clusters[self.cluster_id]
+            ._attr_cache
         ):
             return None
         src_id = bytearray(ieee[0:4])
@@ -1704,7 +1707,8 @@ class GreenPowerProxy(Cluster):
         )
         key = (
             dev.endpoints[self.endpoint_id]
-            .in_clusters[self.cluster_id]._attr_cache[0x9998]
+            .in_clusters[self.cluster_id]
+            ._attr_cache[0x9998]
         )
         nonce = src_id + src_id + counter + (0x05).to_bytes(1, "little")
         header = header + src_id + counter
