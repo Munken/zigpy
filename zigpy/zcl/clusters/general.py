@@ -11,6 +11,7 @@ from typing import Any, List, Optional, Tuple, Union
 from Crypto.Cipher import AES
 from Crypto.Util import Counter
 
+import zigpy
 import zigpy.types as t
 from zigpy.zcl import Cluster, foundation
 
