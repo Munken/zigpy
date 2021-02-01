@@ -1606,6 +1606,7 @@ class GreenPowerProxy(Cluster):
         if ieee not in application.devices:
             return
         if command_id not in GreenPowerProxy.command:
+            LOGGER.debug("Unhandled command_id : %s",command_id)
             return
         calcul_mic = self.calcul_mic(
             ieee,
