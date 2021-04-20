@@ -1751,7 +1751,7 @@ class GreenPowerProxy(Cluster):
             cluster=self.cluster_id,
             src_ep=self.endpoint_id,
             dst_ep=self.endpoint_id,
-            grpid=None,
+            grpid=0x0000,
             radius=30,
             sequence=tsn,
             data=data,
