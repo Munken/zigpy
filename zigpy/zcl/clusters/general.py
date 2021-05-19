@@ -13,6 +13,7 @@ from Crypto.Util import Counter
 
 import zigpy
 import zigpy.types as t
+import zigpy.zdo as zdo
 from zigpy.zcl import Cluster, foundation
 
 LOGGER = logging.getLogger(__name__)
@@ -1565,6 +1566,7 @@ class GreenPowerProxy(Cluster):
         dev = application.add_device(ieee, 32766)
         dev.status = zigpy.device.Status.ENDPOINTS_INIT
         dev._skip_configuration = True
+        dev.node_desc = zdo.types.NodeDescriptor(2, 64, 128, 4174, 82, 82, 0, 82, 0)
         ep = dev.add_endpoint(1)
         ep.status = zigpy.endpoint.Status.ZDO_INIT
         ep.profile_id = zigpy.profiles.zha.PROFILE_ID
