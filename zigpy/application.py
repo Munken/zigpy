@@ -408,6 +408,12 @@ class ControllerApplication(zigpy.util.ListenableMixin, abc.ABC):
 
         gateway = self.get_device(nwk=0)
         gpp = zigpy.zcl.clusters.general.GreenPowerProxy
+
+        # Perform permit for ZGP
+        if gpp.endpoint_id in gateway.endpoints \
+                and gpp.cluster_id in gateway.endpoints[gpp.endpoint_id].out_clusters:
+            await gateway.endpoints[gpp.endpoint_id].out_clusters[gpp.cluster_id].permit(time_s)
+
         if node is not None:
             if not isinstance(node, t.EUI64):
                 node = t.EUI64([t.uint8_t(p) for p in node])
@@ -423,20 +429,17 @@ class ControllerApplication(zigpy.util.ListenableMixin, abc.ABC):
             else:
                 await self.permit_ncp(time_s)
             return
-        elif gpp.endpoint_id in gateway.endpoints \
-                and gpp.cluster_id in gateway.endpoints[gpp.endpoint_id].out_clusters:
-            await gateway.endpoints[gpp.endpoint_id].out_clusters[gpp.cluster_id].permit(time_s)
-        else:
-            await zigpy.zdo.broadcast(
-                self,
-                0x0036,
-                0x0000,
-                0x00,
-                time_s,
-                0,
-                broadcast_address=t.BroadcastAddress.ALL_ROUTERS_AND_COORDINATOR,
-            )
-            return await self.permit_ncp(time_s)
+
+        await zigpy.zdo.broadcast(
+            self,
+            0x0036,
+            0x0000,
+            0x00,
+            time_s,
+            0,
+            broadcast_address=t.BroadcastAddress.ALL_ROUTERS_AND_COORDINATOR,
+        )
+        return await self.permit_ncp(time_s)
 
     def permit_with_key(self, node, code, time_s=60):
         raise NotImplementedError
