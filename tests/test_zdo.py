@@ -65,7 +65,7 @@ async def test_request(zdo_f):
 
 async def test_bind(zdo_f):
     cluster = MagicMock()
-    cluster.endpoint.endpoint_id = 1
+    cluster.endpoint.ENDPOINT_ID = 1
     cluster.cluster_id = 1026
     await zdo_f.bind(cluster)
     assert zdo_f.device.request.call_count == 1
@@ -74,7 +74,7 @@ async def test_bind(zdo_f):
 
 async def test_unbind(zdo_f):
     cluster = MagicMock()
-    cluster.endpoint.endpoint_id = 1
+    cluster.endpoint.ENDPOINT_ID = 1
     cluster.cluster_id = 1026
     await zdo_f.unbind(cluster)
     assert zdo_f.device.request.call_count == 1
