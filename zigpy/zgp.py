@@ -107,13 +107,7 @@ class ZGPListener:
         try:
             LOGGER.info("[listener.zgp_frame] Received zgp frame from %s  : %s", type, args)
             if type == 'bellows':
-                gateway = self.app.get_device(nwk=0)
-                if not endpoint_id in gateway.endpoints:
-                    ep = gateway.add_endpoint(endpoint_id)
-                    ep.status = zigpy.endpoint.Status.ZDO_INIT
-                    ep.profile_id = zigpy.profiles.zha.PROFILE_ID
-                    ep.device_type = device_type
-                    ep.add_output_cluster(cluster_id)
+                _ensure_endpoint(self.app)
                 (status, gpdLink, sequenceNumber, unknown1, addr, gpdfSecurityLevel, gpdfSecurityKeyType, counter,
                  command_id,
                  mic, proxyTableIndex, payload) = args
@@ -187,9 +181,8 @@ def create_device(application, ieee, type=None, remoteCommissioning=False):
 
 def handle_notification(application, ieee, header, counter, command_id, payload, payload_length, mic):
     if ieee not in application.devices:
-        LOGGER.debug("[zgp.handle_notification] Unkwonw device : %s try to create it if allow", ieee)
-        if create_device(application, ieee) is None:
-            return
+        LOGGER.warn("[zgp.handle_notification] Unkwonw device : %s ", ieee)
+        return
     if command_id not in commands:
         LOGGER.debug("[zgp.handle_notification] Unhandled command_id : %s", command_id)
         return
@@ -294,6 +287,16 @@ def setKey(device, key):
 async def permit(application, time_s=60):
     assert 0 <= time_s <= 254
     LOGGER.debug("[zgp.permit] Permit green power pairing for %s s", time_s)
+    _ensure_endpoint(application)
     application.devices[application._ieee].endpoints[endpoint_id].out_clusters[cluster_id]._attr_cache[0x9997] = int(
         time.time() + time_s)
-    return
+
+
+def _ensure_endpoint(application):
+    gateway = application.get_device(nwk=0)
+    if not endpoint_id in gateway.endpoints:
+        ep = gateway.add_endpoint(endpoint_id)
+        ep.status = zigpy.endpoint.Status.ZDO_INIT
+        ep.profile_id = zigpy.profiles.zha.PROFILE_ID
+        ep.device_type = device_type
+        ep.add_output_cluster(cluster_id)
