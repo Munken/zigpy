@@ -18,6 +18,7 @@ import zigpy.util
 import zigpy.zcl
 import zigpy.zdo
 import zigpy.zdo.types as zdo_types
+import zigpy.zgp
 
 DEFAULT_ENDPOINT_ID = 1
 LOGGER = logging.getLogger(__name__)
@@ -36,6 +37,7 @@ class ControllerApplication(zigpy.util.ListenableMixin, abc.ABC):
         self._channels = None
         self._config = config
         self._dblistener = None
+        self._zgplistener = None
         self._ext_pan_id = None
         self._groups = zigpy.group.Groups(self)
         self._ieee = None
@@ -57,6 +59,10 @@ class ControllerApplication(zigpy.util.ListenableMixin, abc.ABC):
         self.groups.add_listener(self._dblistener)
         await self._dblistener.load()
 
+    def _inialize_zgp(self):
+        self._zgplistener = zigpy.zgp.ZGPListener(self)
+        self.add_listener(self._zgplistener)
+
     @classmethod
     async def new(
         cls, config: dict, auto_form: bool = False, start_radio: bool = True
@@ -65,6 +71,7 @@ class ControllerApplication(zigpy.util.ListenableMixin, abc.ABC):
         app = cls(config)
         await app._load_db()
         await app.ota.initialize()
+        app._inialize_zgp()
         app.topology = zigpy.topology.Topology.new(app)
 
         if not start_radio:
@@ -405,6 +412,7 @@ class ControllerApplication(zigpy.util.ListenableMixin, abc.ABC):
     async def permit(self, time_s=60, node=None):
         """Permit joining on a specific node or all router nodes."""
         assert 0 <= time_s <= 254
+        await zigpy.zgp.permit(self, time_s)
         if node is not None:
             if not isinstance(node, t.EUI64):
                 node = t.EUI64([t.uint8_t(p) for p in node])
