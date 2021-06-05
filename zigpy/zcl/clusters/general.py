@@ -1645,7 +1645,7 @@ class GreenPowerProxy(Cluster):
             if 0x9999 in attributes and attributes[0x9999] >= counter:
                 LOGGER.debug("Already get this frame counter,I ignoring it")
                 return
-            attributes._update_attribute(0x9999, counter)
+            attributes[0x9999] = counter
         if cluster_id is not None and type == "CLUSTER_COMMAND":
             if cluster_id not in dev.endpoints[1].out_clusters:
                 dev.endpoints[1].add_output_cluster(cluster_id)
