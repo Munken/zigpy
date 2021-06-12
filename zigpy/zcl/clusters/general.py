@@ -1535,7 +1535,7 @@ class GreenPowerProxy(Cluster):
         0x33: ("Indoor Environment Sensor", [], []),
     }
 
-    def create_device(self, ieee, type=None, remoteCommissioning=False):
+    def create_device(self, ieee, type=None, remoteCommissioning=False, payload=None):
         application = self.endpoint.device.application
         if ieee in application.devices:
             return application.devices[ieee]
@@ -1564,6 +1564,7 @@ class GreenPowerProxy(Cluster):
             ep.in_clusters[
                 zigpy.zcl.clusters.general.Basic.cluster_id
             ]._update_attribute(0x0005, name)
+
             for cluster_id in in_clusters:
                 LOGGER.debug("Add input cluster id %s on device %s", cluster_id, ieee)
                 ep.add_input_cluster(cluster_id)
@@ -1575,9 +1576,10 @@ class GreenPowerProxy(Cluster):
                 zigpy.zcl.clusters.general.Basic.cluster_id
             ]._update_attribute(0x0005, "GreenPowerDevice")
         ep = dev.add_endpoint(self.endpoint_id)
+
         ep.status = zigpy.endpoint.Status.ZDO_INIT
         ep.profile_id = zigpy.profiles.zha.PROFILE_ID
-        ep.device_type = zigpy.profiles.zha.DeviceType.GREEN_POWER
+        ep.device_type = int(type)
         ep.add_input_cluster(self.cluster_id)
         application.device_initialized(dev)
         return dev
