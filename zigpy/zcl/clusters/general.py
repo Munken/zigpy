@@ -1504,15 +1504,15 @@ class GreenPowerProxy(Cluster):
         0x45: ("Move Saturation Stop", "CLUSTER_COMMAND", (), 0x0300, 0x0047, ()),
         0x50: ("Lock Door", "CLUSTER_COMMAND", (), 0x0101, 0x0000, ()),
         0x51: ("Unlock Door", "CLUSTER_COMMAND", (), 0x0101, 0x0001, ()),
-        0x60: ("Press 1 of 1", "CLUSTER_COMMAND", (), None, None, ()),
-        0x61: ("Release 1 of 1", "CLUSTER_COMMAND", (), None, None, ()),
-        0x62: ("Press 1 of 2", "CLUSTER_COMMAND", (), None, None, ()),
-        0x63: ("Release 1 of 2", "CLUSTER_COMMAND", (), None, None, ()),
-        0x64: ("Press 2 of 2", "CLUSTER_COMMAND", (), None, None, ()),
-        0x65: ("Release 2 of 2", "CLUSTER_COMMAND", (), None, None, ()),
-        0x66: ("Short press 1 of 1", "CLUSTER_COMMAND", (), None, None, ()),
-        0x67: ("Short press 1 of 2", "CLUSTER_COMMAND", (), None, None, ()),
-        0x68: ("Short press 2 of 2", "CLUSTER_COMMAND", (), None, None, ()),
+        0x60: ("Press 1 of 1", "CLUSTER_COMMAND", (), 0x0005, 0x0001, ()),
+        0x61: ("Release 1 of 1", "CLUSTER_COMMAND", (), 0x0005, 0x0001, ()),
+        0x62: ("Press 1 of 2", "CLUSTER_COMMAND", (), 0x0005, 0x0001, ()),
+        0x63: ("Release 1 of 2", "CLUSTER_COMMAND", (), 0x0005, 0x0001, ()),
+        0x64: ("Press 2 of 2", "CLUSTER_COMMAND", (), 0x0005, 0x0001, ()),
+        0x65: ("Release 2 of 2", "CLUSTER_COMMAND", (), 0x0005, 0x0001, ()),
+        0x66: ("Short press 1 of 1", "CLUSTER_COMMAND", (), 0x0005, 0x0001, ()),
+        0x67: ("Short press 1 of 2", "CLUSTER_COMMAND", (), 0x0005, 0x0001, ()),
+        0x68: ("Short press 2 of 2", "CLUSTER_COMMAND", (), 0x0005, 0x0001, ()),
         0x69: ("Press", "CLUSTER_COMMAND", (t.uint8_t,), 0x0005, 0x0001, (0,)),
         0x6A: ("Release", "CLUSTER_COMMAND", (t.uint8_t,), None, None, ()),
     }
@@ -1638,7 +1638,7 @@ class GreenPowerProxy(Cluster):
                 application.device_initialized(dev)
             dev.endpoints[1].out_clusters[cluster_id].handle_message(
                 foundation.ZCLHeader.cluster(
-                    application.get_sequence(), zcl_command_id
+                    application.get_sequence(), command_id
                 ),
                 value,
             )
